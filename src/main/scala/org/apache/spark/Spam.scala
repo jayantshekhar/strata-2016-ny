@@ -20,7 +20,7 @@ package org.apache.spark
 
 // $example on$
 import org.apache.spark.ml.evaluation.RegressionEvaluator
-import org.apache.spark.ml.feature.StringIndexer
+import org.apache.spark.ml.feature.{Tokenizer, StringIndexer}
 import org.apache.spark.ml.recommendation.ALS
 import org.apache.spark.sql.types._
 
@@ -44,11 +44,17 @@ object Spam {
 
     ))
 
-    val ds = spark.read.option("inferSchema", "true").schema(customSchema).csv("data/SMSSpamCollection.tsv")
+    val ds = spark.read.option("inferSchema", "true").option("delimiter", "\t").schema(customSchema).csv("data/SMSSpamCollection.tsv")
 
     ds.printSchema()
 
+    ds.show(8)
 
+    val tokenizer = new Tokenizer().setInputCol("message").setOutputCol("tokens")
+
+    val wordsData = tokenizer.transform(ds)
+
+    wordsData.show(8)
 
     spark.stop()
   }
