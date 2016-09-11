@@ -80,7 +80,7 @@ object Churn {
     val indexed = indexer.fit(ds).transform(ds)
 
     indexed.printSchema()
-    
+
     spark.stop()
   }
 }
