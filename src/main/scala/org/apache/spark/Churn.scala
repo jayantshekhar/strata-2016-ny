@@ -21,6 +21,8 @@ package org.apache.spark
 // $example on$
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.recommendation.ALS
+import org.apache.spark.sql.types._
+
 // $example off$
 import org.apache.spark.sql.SparkSession
 
@@ -35,7 +37,38 @@ object Churn {
       .getOrCreate()
     import spark.implicits._
 
-    val ds = spark.read.csv("data/churn.all")
+    val customSchema = StructType(Array(
+      StructField("state", StringType, true),
+      StructField("account_length", DoubleType, true),
+      StructField("area_code", StringType, true),
+
+      StructField("phone_number", StringType, true),
+      StructField("intl_plan", StringType, true),
+
+      StructField("voice_mail_plan", StringType, true),
+      StructField("number_vmail_messages", DoubleType, true),
+
+      StructField("total_day_minutes", DoubleType, true),
+      StructField("total_day_calls", DoubleType, true),
+
+      StructField("total_day_charge", DoubleType, true),
+      StructField("total_eve_minutes", DoubleType, true),
+      StructField("total_eve_calls", DoubleType, true),
+      StructField("total_eve_charge", DoubleType, true),
+      StructField("total_night_minutes", DoubleType, true),
+
+      StructField("total_night_calls", DoubleType, true),
+      StructField("total_night_charge", DoubleType, true),
+      StructField("total_intl_minutes", DoubleType, true),
+      StructField("total_intl_calls", DoubleType, true),
+      StructField("total_intl_charge", DoubleType, true),
+      StructField("number_customer_service_calls", DoubleType, true),
+
+      StructField("churned", StringType, true)
+
+    ))
+
+    val ds = spark.read.option("inferSchema", "true").schema(customSchema).csv("data/churn.all")
 
     ds.printSchema()
 
