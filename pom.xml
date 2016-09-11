@@ -17,12 +17,6 @@
 
   <dependencies>
 
-    <dependency>
-        <groupId>com.databricks</groupId>
-        <artifactId>spark-csv_${scala.minor.version}</artifactId>
-        <version>1.4.0</version>
-    </dependency>
-
     <dependency> <!-- Spark dependency -->
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-core_2.10</artifactId>
