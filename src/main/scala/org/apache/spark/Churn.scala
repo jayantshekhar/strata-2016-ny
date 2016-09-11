@@ -20,6 +20,7 @@ package org.apache.spark
 
 // $example on$
 import org.apache.spark.ml.evaluation.RegressionEvaluator
+import org.apache.spark.ml.feature.StringIndexer
 import org.apache.spark.ml.recommendation.ALS
 import org.apache.spark.sql.types._
 
@@ -72,6 +73,14 @@ object Churn {
 
     ds.printSchema()
 
+    val indexer = new StringIndexer()
+      .setInputCol("intl_plan")
+      .setOutputCol("intl_plan_idx")
+
+    val indexed = indexer.fit(ds).transform(ds)
+
+    indexed.printSchema()
+    
     spark.stop()
   }
 }
