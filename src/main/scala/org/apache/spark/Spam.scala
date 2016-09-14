@@ -68,7 +68,7 @@ object Spam {
 
     // tf
     val hashingTF = new HashingTF()
-      .setInputCol("tokens").setOutputCol("tf").setNumFeatures(20)
+      .setInputCol("tokens").setOutputCol("tf")//.setNumFeatures(20)
     val tfdata = hashingTF.transform(tokdata)
 
     tfdata.show()
@@ -85,28 +85,27 @@ object Spam {
     val assemdata = assembler.transform(idfdata)
 
     // split
-    val Array(trainingData, testData) = assemdata.randomSplit(Array(0.7, 0.3))
+    val Array(trainingData, testData) = assemdata.randomSplit(Array(0.7, 0.3), 1000)
 
     // lr
     val lr = new LogisticRegression()
-      .setMaxIter(10)
-      .setRegParam(0.3)
-      .setElasticNetParam(0.8)
+      //.setMaxIter(100)
+      //.setRegParam(0.3)
+      //.setElasticNetParam(0.8)
       .setLabelCol("label")
       .setFeaturesCol("features")
 
 
     // Fit the model
-    val lrModel = lr.fit(assemdata)
+    val lrModel = lr.fit(trainingData)
 
     val str = lrModel.toString()
     println(str)
 
     // predict
-    val predict = lrModel.transform(assemdata)
+    val predict = lrModel.transform(testData)
 
-
-    predict.show(100)
+    predict.show(10000)
 
     spark.stop()
   }
