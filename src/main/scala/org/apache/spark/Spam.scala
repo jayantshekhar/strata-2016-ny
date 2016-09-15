@@ -25,6 +25,7 @@ import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.feature._
 import org.apache.spark.ml.recommendation.ALS
 import org.apache.spark.sql.types._
+import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
 
 // $example off$
 import org.apache.spark.sql.SparkSession
@@ -105,7 +106,15 @@ object Spam {
     // predict
     val predict = lrModel.transform(testData)
 
-    predict.show(10000)
+    predict.show(100)
+
+    val evaluator = new BinaryClassificationEvaluator()
+      //.setLabelCol("indexedLabel")
+      .setRawPredictionCol("prediction")
+      .setMetricName("precision")
+
+    val accuracy = evaluator.evaluate(predict)
+    println("Test Error = " + (1.0 - accuracy))
 
     spark.stop()
   }

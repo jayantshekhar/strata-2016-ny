@@ -19,8 +19,10 @@
 package org.apache.spark
 
 // $example on$
-import org.apache.spark.ml.evaluation.RegressionEvaluator
-import org.apache.spark.ml.feature.StringIndexer
+
+import org.apache.spark.ml.classification.RandomForestClassifier
+import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, RegressionEvaluator}
+import org.apache.spark.ml.feature.{VectorAssembler, StringIndexer}
 import org.apache.spark.ml.recommendation.ALS
 import org.apache.spark.sql.types._
 
@@ -73,13 +75,56 @@ object Churn {
 
     ds.printSchema()
 
+    // intl_plan
     val indexer = new StringIndexer()
       .setInputCol("intl_plan")
       .setOutputCol("intl_plan_idx")
-
     val indexed = indexer.fit(ds).transform(ds)
 
     indexed.printSchema()
+
+    // churned
+    val churn = new StringIndexer()
+      .setInputCol("churned")
+      .setOutputCol("churned_idx")
+    val churned = churn.fit(indexed).transform(indexed)
+
+    // vector assembler
+    val assembler = new VectorAssembler()
+      .setInputCols(Array("account_length", "intl_plan_idx", "number_vmail_messages", "total_day_minutes", "total_day_calls"))
+      .setOutputCol("features")
+
+    val assemdata = assembler.transform(churned)
+
+    assemdata.printSchema()
+
+    // split
+    val Array(trainingData, testData) = assemdata.randomSplit(Array(0.7, 0.3), 1000)
+
+    // Train a RandomForest model.
+    val rf = new RandomForestClassifier()
+      .setLabelCol("churned_idx")
+      .setFeaturesCol("features")
+      .setNumTrees(10)
+
+    // Fit the model
+    val rfModel = rf.fit(trainingData)
+
+    val str = rfModel.toDebugString
+    println(str)
+
+    // predict
+    val predict = rfModel.transform(testData)
+
+    predict.show(100)
+
+    val evaluator = new BinaryClassificationEvaluator()
+      .setLabelCol("churned_idx")
+      .setRawPredictionCol("prediction")
+      //.setMetricName("rmse")
+
+    val accuracy = evaluator.evaluate(predict)
+    println("Test Error = " + (1.0 - accuracy))
 
     spark.stop()
   }
