@@ -21,6 +21,7 @@ package org.apache.spark
 // $example on$
 
 import org.apache.spark.ml.classification.RandomForestClassifier
+import org.apache.spark.ml.clustering.KMeans
 import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, RegressionEvaluator}
 import org.apache.spark.ml.feature.{VectorAssembler, StringIndexer}
 import org.apache.spark.ml.recommendation.ALS
@@ -29,7 +30,7 @@ import org.apache.spark.sql.types._
 // $example off$
 import org.apache.spark.sql.SparkSession
 
-
+// https://forge.scilab.org/index.php/p/rdataset/source/tree/master/csv/datasets/mtcars.csv
 object KMeans {
 
   def main(args: Array[String]) {
@@ -71,17 +72,38 @@ object KMeans {
 
       StructField("horsepower", StringType, true),
       StructField("peak-rpm", StringType, true),
-      StructField("city-mpg", StringType, true),
-      StructField("highway-mpg", StringType, true),
-      StructField("price", StringType, true)
+      StructField("city-mpg", IntegerType, true),
+      StructField("highway-mpg", IntegerType, true),
+      StructField("price", IntegerType, true)
 
     ))
 
-    val ds = spark.read.option("inferSchema", "true").schema(customSchema).csv("data/imports-85.data")
+    val ds = spark.read.option("inferSchema", "true").option("header", "true").option("nullValue", "?").csv("data/mtcars.csv")
 
     ds.printSchema()
-
     ds.show()
+
+    // vector assembler
+    val assembler = new VectorAssembler()
+      .setInputCols(Array("mpg", "cyl", "disp"))
+      .setOutputCol("features")
+
+    val assemdata = assembler.transform(ds)
+
+    // Trains a k-means model
+    val kmeans = new KMeans()
+      .setK(5)
+      .setFeaturesCol("features")
+      .setPredictionCol("prediction")
+    val model = kmeans.fit(assemdata)
+
+    // Evaluate clustering by computing Within Set Sum of Squared Errors.
+    val WSSSE = model.computeCost(assemdata)
+    println(s"Within Set Sum of Squared Errors = $WSSSE")
+
+    // Shows the result.
+    println("Cluster Centers: ")
+    model.clusterCenters.foreach(println)
 
     spark.stop()
   }
