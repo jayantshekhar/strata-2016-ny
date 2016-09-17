@@ -52,6 +52,10 @@ object GraphXSample {
       triplet => triplet.srcAttr._1 + " is the " + triplet.attr + " of " + triplet.dstAttr._1
     ).collect.foreach(println(_))
 
+    // Remove rxin edge
+    val subgraph = graph.subgraph(vpred = (id, attr) => attr._1 != "rxin")
+
+    subgraph.collectEdges(EdgeDirection.Either).foreach(println(_))
 
     // The reverse operator returns a new graph with all the edge directions reversed.
     //graph.reverse
