@@ -52,10 +52,22 @@ object GraphXSample {
       triplet => triplet.srcAttr._1 + " is the " + triplet.attr + " of " + triplet.dstAttr._1
     ).collect.foreach(println(_))
 
-    // Remove rxin edge
-    val subgraph = graph.subgraph(vpred = (id, attr) => attr._1 != "rxin")
+    // Remove franklin
+    val subgraph = graph.subgraph(vpred = (id, attr) => attr._1 != "franklin")
+    println(subgraph.vertices.collect.mkString("\n"))
 
-    subgraph.collectEdges(EdgeDirection.Either).foreach(println(_))
+    // connected components
+    val cc = subgraph.connectedComponents()
+    cc.vertices.collect().foreach(println(_))
+    /*
+    cc.triplets.map(
+      triplet => triplet.toString()
+    ).collect.foreach(println(_))
+    */
+
+    // triangle counting
+    val triCounts = graph.triangleCount()
+    triCounts.vertices.collect().foreach(println(_))
 
     // The reverse operator returns a new graph with all the edge directions reversed.
     //graph.reverse
