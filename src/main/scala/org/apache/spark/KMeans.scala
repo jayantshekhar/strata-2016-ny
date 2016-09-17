@@ -92,7 +92,7 @@ object KMeans {
 
     // Trains a k-means model
     val kmeans = new KMeans()
-      .setK(5)
+      .setK(10)
       .setFeaturesCol("features")
       .setPredictionCol("prediction")
     val model = kmeans.fit(assemdata)
@@ -104,6 +104,11 @@ object KMeans {
     // Shows the result.
     println("Cluster Centers: ")
     model.clusterCenters.foreach(println)
+
+    // predict
+    val predict = model.transform(assemdata)
+
+    predict.show(1000)
 
     spark.stop()
   }
