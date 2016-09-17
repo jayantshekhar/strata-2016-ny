@@ -85,7 +85,7 @@ object KMeans {
 
     // vector assembler
     val assembler = new VectorAssembler()
-      .setInputCols(Array("mpg", "cyl", "disp"))
+      .setInputCols(Array("mpg", "cyl", "disp", "hp", "drat", "wt"))
       .setOutputCol("features")
 
     val assemdata = assembler.transform(ds)
