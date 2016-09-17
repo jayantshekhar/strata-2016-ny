@@ -69,6 +69,10 @@ object GraphXSample {
     val triCounts = graph.triangleCount()
     triCounts.vertices.collect().foreach(println(_))
 
+    // Compute the PageRank
+    val pagerankGraph = graph.pageRank(0.001)
+    pagerankGraph.vertices.collect().foreach(println(_))
+
     // The reverse operator returns a new graph with all the edge directions reversed.
     //graph.reverse
 
