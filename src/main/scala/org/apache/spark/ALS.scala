@@ -31,7 +31,7 @@ import org.apache.spark.sql.SparkSession
  * bin/run-example ml.ALSExample
  * }}}
  */
-object ALSExample {
+object ALS {
 
   // $example on$
   case class Rating(userId: Int, movieId: Int, rating: Float, timestamp: Long)
@@ -51,7 +51,7 @@ object ALSExample {
     import spark.implicits._
 
     // $example on$
-    val ratings = spark.read.textFile("data/sample_movielens_ratings.txt")
+    val ratings = spark.read.textFile("data/movielens_ratings.txt")
       .map(parseRating)
       .toDF()
     val Array(training, test) = ratings.randomSplit(Array(0.8, 0.2))
