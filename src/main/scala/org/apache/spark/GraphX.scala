@@ -1,5 +1,6 @@
 package org.apache.spark
 
+import org.apache.spark._
 import org.apache.spark.graphx._
 import org.apache.spark.graphx.util.GraphGenerators
 import org.apache.spark.rdd.RDD
@@ -106,7 +107,6 @@ object GraphX {
       (a, b) => math.min(a, b) // Merge Message
     )
     println(sssp.vertices.collect.mkString("\n"))
-
 
   }
 
