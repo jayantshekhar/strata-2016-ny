@@ -114,7 +114,7 @@ object Churn {
     // predict
     val predict = rfModel.transform(testData)
 
-    predict.show(100)
+    predict.select("churned", "prediction").show(1000)
 
     val evaluator = new BinaryClassificationEvaluator()
       .setLabelCol("churned_idx")
