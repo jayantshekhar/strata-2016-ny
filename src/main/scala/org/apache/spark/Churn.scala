@@ -21,9 +21,8 @@ package org.apache.spark
 // $example on$
 
 import org.apache.spark.ml.classification.RandomForestClassifier
-import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, RegressionEvaluator}
-import org.apache.spark.ml.feature.{VectorAssembler, StringIndexer}
-import org.apache.spark.ml.recommendation.ALS
+import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
+import org.apache.spark.ml.feature.{StringIndexer, VectorAssembler}
 import org.apache.spark.sql.types._
 
 // $example off$
@@ -38,7 +37,6 @@ object Churn {
       .appName("ALSExample")
       .master("local")
       .getOrCreate()
-    import spark.implicits._
 
     val customSchema = StructType(Array(
       StructField("state", StringType, true),
