@@ -89,7 +89,10 @@ object Churn {
 
     // vector assembler
     val assembler = new VectorAssembler()
-      .setInputCols(Array("account_length", "intl_plan_idx", "number_vmail_messages", "total_day_minutes", "total_day_calls"))
+      .setInputCols(Array("account_length", "intl_plan_idx", "number_vmail_messages", "total_day_minutes",
+                          "total_day_calls", "total_day_charge", "total_eve_minutes", "total_eve_calls",
+                          "total_night_minutes", "total_night_calls", "total_night_charge", "total_intl_minutes",
+                          "total_intl_calls", "total_intl_charge", "number_customer_service_calls"))
       .setOutputCol("features")
 
     val assemdata = assembler.transform(churned)
