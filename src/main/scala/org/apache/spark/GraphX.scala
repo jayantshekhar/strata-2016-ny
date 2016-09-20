@@ -1,6 +1,5 @@
 package org.apache.spark
 
-import org.apache.spark._
 import org.apache.spark.graphx._
 import org.apache.spark.graphx.util.GraphGenerators
 import org.apache.spark.rdd.RDD
@@ -9,7 +8,7 @@ import org.apache.spark.sql.SparkSession
 /**
  * Created by jayantshekhar on 9/16/16.
  */
-object GraphXSample {
+object GraphX {
 
   def main(args: Array[String]): Unit = {
 
