@@ -60,11 +60,6 @@ object GraphX {
     // connected components
     val cc = subgraph.connectedComponents()
     cc.vertices.collect().foreach(println(_))
-    /*
-    cc.triplets.map(
-      triplet => triplet.toString()
-    ).collect.foreach(println(_))
-    */
 
     // triangle counting
     val triCounts = graph.triangleCount()
@@ -74,16 +69,14 @@ object GraphX {
     val pagerankGraph = graph.pageRank(0.001)
     pagerankGraph.vertices.collect().foreach(println(_))
 
+
     // The reverse operator returns a new graph with all the edge directions reversed.
-    //graph.reverse
-
-
-    // The subgraph operator takes vertex and edge predicates and returns the graph containing only the vertices that
-    // satisfy the vertex predicate (evaluate to true) and edges that satisfy the edge predicate and connect vertices that satisfy the vertex predicate.
-
+    val reverse = graph.reverse
+    reverse.triplets.map(
+      triplet => triplet.toString()
+    ).collect.foreach(println(_))
 
     // pregel
-
     pregel(sc)
   }
 
