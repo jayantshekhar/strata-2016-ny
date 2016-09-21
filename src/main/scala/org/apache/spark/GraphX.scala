@@ -45,7 +45,6 @@ object GraphX {
 
     // Count all the edges where src > dst
     count = graph.edges.filter(e => e.srcId > e.dstId).count
-
     println("count is " + count)
 
     // An edge triplet represents an edge along with the vertex attributes of its neighboring vertices.

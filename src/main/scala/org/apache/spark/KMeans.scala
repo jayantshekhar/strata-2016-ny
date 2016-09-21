@@ -107,7 +107,6 @@ object KMeans {
 
     // predict
     val predict = model.transform(assemdata)
-
     predict.show(1000)
 
     spark.stop()

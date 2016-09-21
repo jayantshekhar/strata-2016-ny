@@ -79,10 +79,10 @@ object Spam {
     val idfModel = idf.fit(tfdata)
     val idfdata = idfModel.transform(tfdata)
 
+    // assembler
     val assembler = new VectorAssembler()
       .setInputCols(Array("idf"))
       .setOutputCol("features")
-
     val assemdata = assembler.transform(idfdata)
 
     // split
@@ -90,9 +90,6 @@ object Spam {
 
     // lr
     val lr = new LogisticRegression()
-      //.setMaxIter(100)
-      //.setRegParam(0.3)
-      //.setElasticNetParam(0.8)
       .setLabelCol("label")
       .setFeaturesCol("features")
 
@@ -105,11 +102,10 @@ object Spam {
 
     // predict
     val predict = lrModel.transform(testData)
-
     predict.show(100)
 
+    // evaluate
     val evaluator = new BinaryClassificationEvaluator()
-      //.setLabelCol("indexedLabel")
       .setRawPredictionCol("prediction")
       .setMetricName("precision")
 

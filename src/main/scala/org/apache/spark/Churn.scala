@@ -122,7 +122,6 @@ object Churn {
     val evaluator = new BinaryClassificationEvaluator()
       .setLabelCol("churned_idx")
       .setRawPredictionCol("prediction")
-      //.setMetricName("rmse")
 
     val accuracy = evaluator.evaluate(predict)
     println("Test Error = " + (1.0 - accuracy))
