@@ -21,6 +21,7 @@ package org.apache.spark
 // $example on$
 
 import org.apache.spark.ml.classification.RandomForestClassifier
+import org.apache.spark.ml.feature.StandardScaler
 import org.apache.spark.ml.clustering.KMeans
 import org.apache.spark.ml.evaluation.{BinaryClassificationEvaluator, RegressionEvaluator}
 import org.apache.spark.ml.feature.{VectorAssembler, StringIndexer}
@@ -87,15 +88,30 @@ object KMeans {
     val assembler = new VectorAssembler()
       .setInputCols(Array("mpg", "cyl", "disp", "hp", "drat", "wt"))
       .setOutputCol("features")
-
+      
     val assemdata = assembler.transform(ds)
+      
+    val scaled = new StandardScaler()
+      .setInputCol("features")
+      .setOutputCol("scaledFeatures")
+      .setWithStd(true)
+      .setWithMean(true)
 
+    // Compute summary statistics by fitting the StandardScaler.
+    val scalerModel = scaled.fit(assemdata)
+
+    // Normalize each feature to have unit standard deviation.
+    val scaledData = scalerModel.transform(assemdata)
+
+    val clusters = 10
     // Trains a k-means model
     val kmeans = new KMeans()
-      .setK(10)
-      .setFeaturesCol("features")
+      .setK(clusters)
+      .setMaxIter(1000)
+      .setFeaturesCol("scaledFeatures")
       .setPredictionCol("prediction")
-    val model = kmeans.fit(assemdata)
+      
+    val model = kmeans.fit(scaledData)
 
     // Evaluate clustering by computing Within Set Sum of Squared Errors.
     val WSSSE = model.computeCost(assemdata)
@@ -107,7 +123,11 @@ object KMeans {
 
     // predict
     val predict = model.transform(assemdata)
-    predict.show(1000)
+    for (i <- 0 to clusters) { 
+      predict.filter(col("prediction") === i)
+      .select(col("_c0"), col("features"), col("prediction"))
+      .collect
+      .foreach(println)}
 
     spark.stop()
   }
