@@ -38,6 +38,7 @@ object Churn {
       .master("local")
       .getOrCreate()
 
+    // define the schema of input data
     val customSchema = StructType(Array(
       StructField("state", StringType, true),
       StructField("account_length", DoubleType, true),
@@ -69,11 +70,11 @@ object Churn {
 
     ))
 
+    // read in the data into a DataFrame
     val ds = spark.read.option("inferSchema", "true").schema(customSchema).csv("data/churn.all")
-
     ds.printSchema()
 
-    // intl_plan
+    // index the intl_plan column
     val indexer = new StringIndexer()
       .setInputCol("intl_plan")
       .setOutputCol("intl_plan_idx")
@@ -81,7 +82,7 @@ object Churn {
 
     indexed.printSchema()
 
-    // churned
+    // index the churned column
     val churn = new StringIndexer()
       .setInputCol("churned")
       .setOutputCol("churned_idx")
@@ -96,10 +97,9 @@ object Churn {
       .setOutputCol("features")
 
     val assemdata = assembler.transform(churned)
-
     assemdata.printSchema()
 
-    // split
+    // split the data for training and test
     val Array(trainingData, testData) = assemdata.randomSplit(Array(0.7, 0.3), 1000)
 
     // Train a RandomForest model.
@@ -110,15 +110,14 @@ object Churn {
 
     // Fit the model
     val rfModel = rf.fit(trainingData)
-
     val str = rfModel.toDebugString
     println(str)
 
     // predict
     val predict = rfModel.transform(testData)
-
     predict.select("churned", "prediction").show(1000)
 
+    // evaluate the results
     val evaluator = new BinaryClassificationEvaluator()
       .setLabelCol("churned_idx")
       .setRawPredictionCol("prediction")
